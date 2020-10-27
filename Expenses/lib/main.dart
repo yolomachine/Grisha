@@ -1,18 +1,26 @@
-import 'package:Expenses/Expenses.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+
+import 'shared.dart';
+import 'widgets/expense_widget.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Intl.defaultLocale = "ru";
+    initializeDateFormatting();
+    GestureBinding.instance.resamplingEnabled = true;
     return MaterialApp(
-      title: 'Expenses Tracker',
+      title: 'Expenses',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Main(title: 'Expenses'),
+      home: Main(title: 'Расходы'),
     );
   }
 }
@@ -41,6 +49,7 @@ class MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -62,7 +71,7 @@ class MainState extends State<Main> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addExpense,
-        tooltip: 'Increment',
+        tooltip: 'Добавить',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
