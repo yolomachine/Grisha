@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 final dateFormatter = DateFormat('dd MMM yyyy', Intl.defaultLocale);
+final monthFormatter = DateFormat('MMMM', Intl.defaultLocale);
 final currencyFormatter = NumberFormat.currency(locale: Intl.defaultLocale, symbol: '₽', decimalDigits: 0);
 
 class DisableOverscrollRendering extends ScrollBehavior {
@@ -28,6 +29,8 @@ class Expense {
   double amount;
   DateTime date;
 
+  Expense.empty();
+  Expense.surrogate({@required this.amount});
   Expense(this.description, this.amount, this.date);
 }
 
