@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Expenses Tracker',
       theme: ThemeData(
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Main(title: 'Expenses'),
@@ -27,13 +27,13 @@ class Main extends StatefulWidget {
 }
 
 class MainState extends State<Main> {
-  List<ExpenseCategoryIcon> icons = [];
+  List<Widget> items = [];
 
   void _addExpense() {
     setState(() {
-      icons.add(ExpenseCategoryIcon(
-          ExpenseCategories.Entertainment,
-          Vector2.both(100)
+      items.add(ExpenseWidget(
+          expense: Expense("Nintendo Switch", 30932.560, DateTime.now()),
+          expenseCategory: ExpenseCategories.Entertainment
       ));
     });
   }
@@ -44,11 +44,21 @@ class MainState extends State<Main> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: icons,
-        ),
+      body:
+      Padding(
+        padding: EdgeInsets.symmetric(vertical: 20.0),
+        child: ListView.separated(
+          itemCount: items.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              height: 80,
+              child: Center(
+                  child: items[index]
+              ),
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) => const Divider(),
+        )
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addExpense,
