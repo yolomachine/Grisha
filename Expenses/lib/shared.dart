@@ -1,4 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+final dateFormatter = DateFormat('dd MMM yyyy', Intl.defaultLocale);
+final currencyFormatter = NumberFormat.currency(locale: Intl.defaultLocale, symbol: '₽', decimalDigits: 0);
+
+class DisableOverscrollRendering extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+}
 
 class Vector2 {
   double x;
@@ -25,6 +37,13 @@ class ExpenseCategory {
   final String assetImagePath;
 
   const ExpenseCategory._(this.color, this.name, this.assetImagePath);
+}
+
+class ExpenseData {
+  Expense expense;
+  ExpenseCategory expenseCategory;
+
+  ExpenseData(this.expense, this.expenseCategory);
 }
 
 class ExpenseCategories {

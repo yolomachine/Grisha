@@ -5,26 +5,21 @@ import '../shared.dart';
 import 'expense_category_icon.dart';
 
 class ExpenseWidget extends StatefulWidget {
-  final Expense expense;
-  final ExpenseCategory expenseCategory;
-  final dateFormatter = DateFormat('dd MMM yyyy', Intl.defaultLocale);
-  final currencyFormatter = NumberFormat('#,##0.00 ₽', Intl.defaultLocale);
+  final ExpenseData expenseData;
 
-  ExpenseWidget({
-    Key key,
-    @required this.expense,
-    @required this.expenseCategory
-  }) : super(key: key);
+  ExpenseWidget(
+    this.expenseData,
+    {Key key}
+  ) : super(key: key);
 
   @override
-  ExpenseWidgetState createState() => ExpenseWidgetState(expense, expenseCategory);
+  ExpenseWidgetState createState() => ExpenseWidgetState(expenseData);
 }
 
 class ExpenseWidgetState extends State<ExpenseWidget> {
-  Expense expense;
-  ExpenseCategory expenseCategory;
+  ExpenseData expenseData;
 
-  ExpenseWidgetState(this.expense, this.expenseCategory);
+  ExpenseWidgetState(this.expenseData);
 
   void _edit() => setState(() => 0);
 
@@ -36,7 +31,7 @@ class ExpenseWidgetState extends State<ExpenseWidget> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: ExpenseCategoryIcon(expenseCategory, size: Vector2.all(50.0)),
+            child: ExpenseCategoryIcon(expenseData.expenseCategory, size: Vector2.all(50.0)),
           ),
           Align(
             alignment: Alignment.centerLeft,
@@ -47,7 +42,7 @@ class ExpenseWidgetState extends State<ExpenseWidget> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Text(
-                    widget.dateFormatter.format(expense.date.toLocal()),
+                    dateFormatter.format(expenseData.expense.date.toLocal()),
                     style: TextStyle(
                       fontSize: 15.0,
                       color: Colors.grey
@@ -58,7 +53,7 @@ class ExpenseWidgetState extends State<ExpenseWidget> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Text(
-                    expense.description,
+                    expenseData.expense.description,
                     style: TextStyle(
                       fontSize: 20.0,
                     ),
@@ -68,10 +63,10 @@ class ExpenseWidgetState extends State<ExpenseWidget> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Text(
-                    widget.currencyFormatter.format(expense.amount),
+                    currencyFormatter.format(expenseData.expense.amount),
                     style: TextStyle(
                       fontSize: 25.0,
-                      color: expenseCategory.color
+                      color: expenseData.expenseCategory.color
                     ),
                     textAlign: TextAlign.left,
                   ),
