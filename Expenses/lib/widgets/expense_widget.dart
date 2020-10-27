@@ -20,8 +20,6 @@ class ExpenseWidgetState extends State<ExpenseWidget> {
 
   ExpenseWidgetState(this.expenseData);
 
-  void _edit() => setState(() => 0);
-
   @override
   Widget build(BuildContext context) {
     return Padding(

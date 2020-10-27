@@ -1,5 +1,7 @@
 import 'dart:collection';
+import 'dart:developer';
 
+import 'package:Expenses/screens/expense_setup_screen.dart';
 import 'package:Expenses/widgets/expense_list_view.dart';
 import 'package:Expenses/widgets/expense_summary.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,20 +46,6 @@ class MainState extends State<Main> {
   HashMap distribution = HashMap<ExpenseCategory, double>();
   DateTimeRange period = DateTimeRange(start: DateTime.now(), end: DateTime.now());
 
-  void _addExpense() {
-    setState(() {
-      var e = ExpenseData(
-          Expense("Аренда жилья", 18500, DateTime.now()),
-          ExpenseCategories.Bills
-      );
-      if (!distribution.containsKey(e.expenseCategory)) {
-        distribution[e.expenseCategory] = 0.0;
-      }
-      distribution[e.expenseCategory] += e.expense.amount;
-      items.add(ExpenseWidget(e));
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +64,21 @@ class MainState extends State<Main> {
         )
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addExpense,
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ExpenseSetupScreen())
+          );
+          if (result != null) {
+            setState(() {
+              if (!distribution.containsKey(result.expenseCategory)) {
+                distribution[result.expenseCategory] = 0.0;
+              }
+              distribution[result.expenseCategory] += result.expense.amount;
+              items.add(ExpenseWidget(result));
+            });
+          }
+        },
         tooltip: 'Добавить',
         child: Icon(Icons.add),
       ),
