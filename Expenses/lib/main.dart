@@ -43,7 +43,7 @@ class Main extends StatefulWidget {
 
 class MainState extends State<Main> {
   List<Widget> items = [];
-  HashMap distribution = HashMap<ExpenseCategory, double>();
+  HashMap distribution = HashMap<ExpenseCategory, int>();
   DateTimeRange period = DateTimeRange(start: DateTime.now(), end: DateTime.now());
 
   @override
@@ -69,13 +69,13 @@ class MainState extends State<Main> {
             context,
             MaterialPageRoute(builder: (context) => ExpenseSetupScreen())
           );
-          if (result != null) {
+          if (result != null && result.success) {
             setState(() {
-              if (!distribution.containsKey(result.expenseCategory)) {
-                distribution[result.expenseCategory] = 0.0;
+              if (!distribution.containsKey(result.data.expenseCategory)) {
+                distribution[result.data.expenseCategory] = 0;
               }
-              distribution[result.expenseCategory] += result.expense.amount;
-              items.add(ExpenseWidget(result));
+              distribution[result.data.expenseCategory] += result.data.expense.amount;
+              items.add(ExpenseWidget(result.data));
             });
           }
         },

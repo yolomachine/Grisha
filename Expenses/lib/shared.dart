@@ -18,7 +18,30 @@ class DisableOverscrollRendering extends ScrollBehavior {
   }
 }
 
+class NumericTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(text: '');
+    } else if (newValue.text.compareTo(oldValue.text) != 0) {
+      final selectionIndexFromTheRight = newValue.text.length - newValue.selection.end;
+      final f = NumberFormat("#,###");
+      final number = int.parse(newValue.text.replaceAll(f.symbols.GROUP_SEP, ''));
+      final newString = f.format(number);
+      return newValue = TextEditingValue(
+        text: newString,
+        selection: TextSelection.collapsed(
+          offset: newString.length - selectionIndexFromTheRight
+        ),
+      );
+    } else {
+      return newValue;
+    }
+  }
+}
+
 class FocusableTextField extends StatefulWidget {
+  final dynamic value;
   final Icon icon;
   final void Function(String) onSubmitted;
   final String labelText;
@@ -28,6 +51,7 @@ class FocusableTextField extends StatefulWidget {
 
   const FocusableTextField({
     Key key,
+    this.value,
     this.icon,
     this.onSubmitted,
     this.labelText,
@@ -38,18 +62,21 @@ class FocusableTextField extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => FocusableTextFieldState(
-      this.icon,
-      this.onSubmitted,
-      this.labelText,
-      this.suffixText,
-      this.textInputType,
-      this.formatters
+    this.value,
+    this.icon,
+    this.onSubmitted,
+    this.labelText,
+    this.suffixText,
+    this.textInputType,
+    this.formatters
   );
 }
 
 class FocusableTextFieldState extends State<FocusableTextField> {
   FocusNode _focusNode;
+  TextEditingController _controller;
 
+  dynamic value;
   Icon icon;
   void Function(String) onSubmitted;
   String labelText;
@@ -58,18 +85,20 @@ class FocusableTextFieldState extends State<FocusableTextField> {
   List<TextInputFormatter> formatters;
 
   FocusableTextFieldState(
-      this.icon,
-      this.onSubmitted,
-      this.labelText,
-      this.suffixText,
-      this.textInputType,
-      this.formatters
-      );
+    this.value,
+    this.icon,
+    this.onSubmitted,
+    this.labelText,
+    this.suffixText,
+    this.textInputType,
+    this.formatters
+  );
 
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
+    _controller = TextEditingController.fromValue(TextEditingValue(text: value?.toString() ?? ''));
   }
 
   @override
@@ -87,6 +116,7 @@ class FocusableTextFieldState extends State<FocusableTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: _controller,
       focusNode: _focusNode,
       onTap: _requestFocus,
       onSubmitted: onSubmitted,
@@ -112,25 +142,31 @@ class FocusableTextFieldState extends State<FocusableTextField> {
 }
 
 class DateTimeTextField extends StatefulWidget {
+  final DateTime value;
   final void Function(DateTime) onSubmitted;
 
-  const DateTimeTextField({Key key, this.onSubmitted}) : super(key: key);
+  const DateTimeTextField({
+    Key key,
+    this.onSubmitted,
+    this.value
+  }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => DateTimeTextFieldState(this.onSubmitted);
+  State<StatefulWidget> createState() => DateTimeTextFieldState(this.onSubmitted, this.value);
 }
 
 class DateTimeTextFieldState extends State<DateTimeTextField> {
+  DateTime value;
   void Function(DateTime) onSubmitted;
   DateTime selectedDate;
   TextEditingController _date;
 
-  DateTimeTextFieldState(this.onSubmitted);
+  DateTimeTextFieldState(this.onSubmitted, this.value);
 
   @override
   void initState() {
     super.initState();
-    selectedDate = DateTime.now();
+    selectedDate = value ?? DateTime.now();
     _date = TextEditingController();
     _date.value = TextEditingValue(text: dateFormatter.format(selectedDate));
   }
@@ -139,8 +175,8 @@ class DateTimeTextFieldState extends State<DateTimeTextField> {
     final picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
-        firstDate: DateTime(1901, 1),
-        lastDate: DateTime(2100)
+        firstDate: DateTime(1917, 11, 7),
+        lastDate: DateTime.now()
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
@@ -190,7 +226,7 @@ class Vector2 {
 
 class Expense {
   String description;
-  double amount;
+  int amount;
   DateTime date;
 
   Expense.surrogate({@required this.amount});
@@ -211,14 +247,29 @@ class ExpenseData {
   ExpenseCategory expenseCategory;
 
   ExpenseData(this.expense, this.expenseCategory);
+
+  ExpenseData clone() => ExpenseData(
+    Expense(
+      "${expense.description}",
+      expense.amount,
+      DateTime.fromMillisecondsSinceEpoch(expense.date.millisecondsSinceEpoch)
+    ),
+    expenseCategory
+  );
+
+  bool equals(ExpenseData other) =>
+    expense.description == other.expense.description &&
+    expense.amount == other.expense.amount &&
+    expense.date == other.expense.date &&
+    expenseCategory == other.expenseCategory;
 }
 
 class ExpenseCategories {
-  static const Bills         = const ExpenseCategory._(Color.fromARGB(255, 255, 192, 72), 'Bills',         'data/icons/bills.svg');
-  static const EatingOut     = const ExpenseCategory._(Color.fromARGB(255, 87, 95, 207),  'Eating out',    'data/icons/eatingout.svg');
-  static const Entertainment = const ExpenseCategory._(Color.fromARGB(255, 239, 87, 119), 'Entertainment', 'data/icons/entertainment.svg');
-  static const Fuel          = const ExpenseCategory._(Color.fromARGB(255, 72, 84, 96),   'Fuel',          'data/icons/fuel.svg');
-  static const Groceries     = const ExpenseCategory._(Color.fromARGB(255, 55, 232, 129), 'Groceries',     'data/icons/groceries.svg');
-  static const HealthCare    = const ExpenseCategory._(Color.fromARGB(255, 255, 94, 57),  'Health care',   'data/icons/healthcare.svg');
-  static const Other         = const ExpenseCategory._(Color.fromARGB(255, 52, 171, 228), 'Other',         'data/icons/other.svg');
+  static const Bills         = const ExpenseCategory._(Color.fromARGB(255, 255, 192, 72), 'Коммунальные услуги', 'data/icons/bills.svg');
+  static const EatingOut     = const ExpenseCategory._(Color.fromARGB(255, 87, 95, 207),  'Кафе и рестораны',    'data/icons/eatingout.svg');
+  static const Entertainment = const ExpenseCategory._(Color.fromARGB(255, 239, 87, 119), 'Развлечения',         'data/icons/entertainment.svg');
+  static const Fuel          = const ExpenseCategory._(Color.fromARGB(255, 72, 84, 96),   'Топливо',             'data/icons/fuel.svg');
+  static const Groceries     = const ExpenseCategory._(Color.fromARGB(255, 55, 232, 129), 'Бакалея',             'data/icons/groceries.svg');
+  static const HealthCare    = const ExpenseCategory._(Color.fromARGB(255, 255, 94, 57),  'Медицинские услуги',  'data/icons/healthcare.svg');
+  static const Other         = const ExpenseCategory._(Color.fromARGB(255, 52, 171, 228), 'Прочие расходы',      'data/icons/other.svg');
 }
