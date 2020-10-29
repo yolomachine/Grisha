@@ -21,7 +21,7 @@ class ExpenseSetupScreen extends StatefulWidget {
   _ExpenseSetupScreenState createState() => _ExpenseSetupScreenState();
 }
 
-class _ExpenseSetupScreenState extends State<ExpenseSetupScreen> {
+class _ExpenseSetupScreenState extends PortraitState<ExpenseSetupScreen> {
   ExpenseSetupScreenResult result;
   ExpenseData mutableData;
   bool isEditing;

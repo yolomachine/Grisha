@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:developer';
 
 import 'package:Expenses/screens/expense_setup_screen.dart';
 import 'package:Expenses/widgets/expense_list_view.dart';
@@ -41,7 +40,7 @@ class Main extends StatefulWidget {
   MainState createState() => MainState();
 }
 
-class MainState extends State<Main> {
+class MainState extends PortraitState<Main> {
   List<Widget> items = [];
   HashMap distribution = HashMap<ExpenseCategory, int>();
   DateTimeRange period = DateTimeRange(start: DateTime.now(), end: DateTime.now());

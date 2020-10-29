@@ -24,30 +24,30 @@ class ExpenseSummary extends StatelessWidget {
       total += e;
     }
     return Container(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 30.0),
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                dateLabel,
-                style: TextStyle(fontSize: 15, color: Colors.grey),
-              ),
-              SizedBox(width: 250, height: 250, child: ExpenseChartWidget(distribution)),
-              Text(
-                currencyFormatter.format(total),
-                style: TextStyle(fontSize: 35),
-              )
-            ],
-          ),
+      padding: EdgeInsets.symmetric(vertical: 30.0),
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              dateLabel,
+              style: TextStyle(fontSize: 15, color: Colors.grey),
+            ),
+            SizedBox(width: 250, height: 250, child: ExpenseChartWidget(distribution)),
+            Text(
+              currencyFormatter.format(total),
+              style: TextStyle(fontSize: 35),
+            )
+          ],
         ),
       ),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius:
-            BorderRadius.only(bottomLeft: Radius.circular(35), bottomRight: Radius.circular(35)),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(35),
+          bottomRight: Radius.circular(35)
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),

@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 
 final currencySymbol = '₽';
 final dateFormatter = DateFormat('dd MMM yyyy', Intl.defaultLocale);
-final monthFormatter = DateFormat('MMMM', Intl.defaultLocale);
+final monthFormatter = DateFormat('MMM yyyy', Intl.defaultLocale);
 final currencyFormatter = NumberFormat.currency(locale: Intl.defaultLocale, symbol: currencySymbol, decimalDigits: 0);
 
 class DisableOverscrollRendering extends ScrollBehavior {
@@ -15,6 +15,27 @@ class DisableOverscrollRendering extends ScrollBehavior {
     AxisDirection axisDirection
   ) {
     return child;
+  }
+}
+
+abstract class PortraitState<T extends StatefulWidget> extends State<T> {
+  @override
+  void initState(){
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
+  @override
+  dispose(){
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 }
 
@@ -172,6 +193,7 @@ class DateTimeTextFieldState extends State<DateTimeTextField> {
   }
 
   _selectDate(BuildContext context) async {
+    FocusScope.of(context).unfocus();
     final picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,

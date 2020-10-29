@@ -37,7 +37,10 @@ class ExpenseCategorySelectorState extends State<ExpenseCategorySelector> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => currentSelectionSetter(expenseCategory),
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        currentSelectionSetter(expenseCategory);
+      },
       child: Row(
         children: [
           Container(
