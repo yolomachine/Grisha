@@ -7,6 +7,17 @@ final dateFormatter = DateFormat('dd MMM yyyy', Intl.defaultLocale);
 final monthFormatter = DateFormat('MMM yyyy', Intl.defaultLocale);
 final currencyFormatter = NumberFormat.currency(locale: Intl.defaultLocale, symbol: currencySymbol, decimalDigits: 0);
 
+DateTime convertDateTime(DateTime date) => DateTime(
+  date.year,
+  date.month,
+  date.day
+).toLocal();
+
+DateTimeRange getDefaultTimeRange() => DateTimeRange(
+    start: convertDateTime(DateTime(1917, 11, 7)),
+    end: convertDateTime(DateTime.now())
+);
+
 class DisableOverscrollRendering extends ScrollBehavior {
   @override
   Widget buildViewportChrome(
@@ -187,18 +198,19 @@ class DateTimeTextFieldState extends State<DateTimeTextField> {
   @override
   void initState() {
     super.initState();
-    selectedDate = value ?? DateTime.now();
+    selectedDate = value ?? convertDateTime(DateTime.now());
     _date = TextEditingController();
     _date.value = TextEditingValue(text: dateFormatter.format(selectedDate));
   }
 
   _selectDate(BuildContext context) async {
     FocusScope.of(context).unfocus();
+    final defaultTimeRange = getDefaultTimeRange();
     final picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
-        firstDate: DateTime(1917, 11, 7),
-        lastDate: DateTime.now()
+        firstDate: defaultTimeRange.start,
+        lastDate: defaultTimeRange.end
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
@@ -265,10 +277,11 @@ class ExpenseCategory {
 }
 
 class ExpenseData {
+  int id = -1;
   Expense expense;
   ExpenseCategory expenseCategory;
 
-  ExpenseData(this.expense, this.expenseCategory);
+  ExpenseData(this.expense, this.expenseCategory, {this.id});
 
   ExpenseData clone() => ExpenseData(
     Expense(
@@ -276,7 +289,8 @@ class ExpenseData {
       expense.amount,
       DateTime.fromMillisecondsSinceEpoch(expense.date.millisecondsSinceEpoch)
     ),
-    expenseCategory
+    expenseCategory,
+    id: id,
   );
 
   bool equals(ExpenseData other) =>
@@ -284,6 +298,16 @@ class ExpenseData {
     expense.amount == other.expense.amount &&
     expense.date == other.expense.date &&
     expenseCategory == other.expenseCategory;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'category': expenseCategory.name,
+      'description': expense.description,
+      'amount': expense.amount,
+      'date': expense.date.millisecondsSinceEpoch
+    };
+  }
 }
 
 class ExpenseCategories {
@@ -294,4 +318,14 @@ class ExpenseCategories {
   static const Groceries     = const ExpenseCategory._(Color.fromARGB(255, 55, 232, 129), 'Бакалея',             'data/icons/groceries.svg');
   static const HealthCare    = const ExpenseCategory._(Color.fromARGB(255, 255, 94, 57),  'Медицинские услуги',  'data/icons/healthcare.svg');
   static const Other         = const ExpenseCategory._(Color.fromARGB(255, 52, 171, 228), 'Прочие расходы',      'data/icons/other.svg');
+
+  static ExpenseCategory determine(String name) {
+    final values = [ Bills, EatingOut, Entertainment, Fuel, Groceries, HealthCare, Other ];
+    for (var e in values) {
+      if (e.name == name) {
+        return e;
+      }
+    }
+    throw Exception("Unknown expense category $name");
+  }
 }

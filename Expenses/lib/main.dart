@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:Expenses/database_controller.dart';
 import 'package:Expenses/screens/expense_setup_screen.dart';
 import 'package:Expenses/widgets/expense_list_view.dart';
 import 'package:Expenses/widgets/expense_summary.dart';
@@ -12,9 +13,14 @@ import 'package:intl/intl.dart';
 import 'shared.dart';
 import 'widgets/expense_widget.dart';
 
-void main() => runApp(MyApp());
+final database = ExpensiveDatabaseController('expensive.db');
 
-class MyApp extends StatelessWidget {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(Application());
+}
+
+class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Intl.defaultLocale = "ru";
@@ -41,9 +47,33 @@ class Main extends StatefulWidget {
 }
 
 class MainState extends PortraitState<Main> {
-  List<Widget> items = [];
-  HashMap distribution = HashMap<ExpenseCategory, int>();
-  DateTimeRange period = DateTimeRange(start: DateTime.now(), end: DateTime.now());
+  List<Widget> items;
+  HashMap distribution;
+  DateTimeRange period;
+
+  @override
+  void initState() {
+    super.initState();
+    items = [];
+    distribution = HashMap<ExpenseCategory, int>();
+    period = null;
+    _rebuild();
+  }
+
+  void _rebuild() async {
+    final data = await database.select(period ?? getDefaultTimeRange());
+    setState(() {
+      items.clear();
+      distribution.clear();
+      for (var e in data) {
+        items.add(ExpenseWidget(e));
+        if (!distribution.containsKey(e.expenseCategory)) {
+          distribution[e.expenseCategory] = 0;
+        }
+        distribution[e.expenseCategory] += e.expense.amount;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +87,7 @@ class MainState extends PortraitState<Main> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ExpenseSummary(distribution: distribution, period: period),
+            ExpenseSummary(distribution: distribution, period: period ?? getDefaultTimeRange()),
             ExpenseListView(items: items)
           ]
         )
@@ -69,13 +99,9 @@ class MainState extends PortraitState<Main> {
             MaterialPageRoute(builder: (context) => ExpenseSetupScreen())
           );
           if (result != null && result.success) {
-            setState(() {
-              if (!distribution.containsKey(result.data.expenseCategory)) {
-                distribution[result.data.expenseCategory] = 0;
-              }
-              distribution[result.data.expenseCategory] += result.data.expense.amount;
-              items.add(ExpenseWidget(result.data));
-            });
+            result.data.id = items.length;
+            await database.insert(result.data);
+            _rebuild();
           }
         },
         tooltip: 'Добавить',

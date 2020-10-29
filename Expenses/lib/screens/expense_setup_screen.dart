@@ -30,7 +30,9 @@ class _ExpenseSetupScreenState extends PortraitState<ExpenseSetupScreen> {
   void initState() {
     super.initState();
     isEditing = widget.data != null;
-    mutableData = isEditing ? widget.data?.clone() : ExpenseData(Expense.only(date: DateTime.now()), null);
+    mutableData = isEditing ?
+      widget.data?.clone() :
+      ExpenseData(Expense.only(date: convertDateTime(DateTime.now())), null);
     result = ExpenseSetupScreenResult(mutableData, success: true);
   }
 
