@@ -61,12 +61,19 @@ class MainState extends PortraitState<Main> {
   }
 
   void _rebuild() async {
-    final data = await database.select(period ?? getDefaultTimeRange());
+    final data = await database.select(period ?? getMonthRange(DateTime.now().toLocal()));
     setState(() {
       items.clear();
       distribution.clear();
       for (var e in data) {
-        items.add(ExpenseWidget(e, key: Key("${e.id}")));
+        items.add(ExpenseWidget(
+          e,
+          key: Key("${e.id}+${e.expense.amount}+${e.expense.description}+${e.expense.date}+${e.expenseCategory.name}"),
+          editStateCallback: (data) async {
+            await database.update(data);
+            _rebuild();
+          })
+        );
         if (!distribution.containsKey(e.expenseCategory)) {
           distribution[e.expenseCategory] = 0;
         }
@@ -92,7 +99,7 @@ class MainState extends PortraitState<Main> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ExpenseSummary(distribution: distribution, period: period ?? getDefaultTimeRange()),
+            ExpenseSummary(distribution: distribution, period: period ?? getMonthRange(DateTime.now().toLocal())),
             ExpenseListView(items: items)
           ]
         )

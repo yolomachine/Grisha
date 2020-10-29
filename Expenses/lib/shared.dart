@@ -1,3 +1,4 @@
+import 'package:date_util/date_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +18,15 @@ DateTimeRange getDefaultTimeRange() => DateTimeRange(
     start: DateTime(1917, 11, 7).toLocal(),
     end: DateTime.now().toLocal()
 );
+
+DateTimeRange getMonthRange(DateTime date) {
+  var dateUtil = DateUtil();
+  final start = DateTime(date.year, date.month, 1);
+  final end = start
+      .add(Duration(days: dateUtil.daysInMonth(date.month, date.year)))
+      .subtract(Duration(seconds: 1));
+  return DateTimeRange(start: start, end: end);
+}
 
 class DisableOverscrollRendering extends ScrollBehavior {
   @override

@@ -32,6 +32,11 @@ dependencies:
 
   intl: ^0.16.1
 
+  focused_menu: ^1.0.1
+
+  month_picker_dialog: ^0.3.3
+
+  date_util: ^0.1.4
 
   cupertino_icons: ^1.0.0
 

@@ -45,8 +45,8 @@ class ExpenseSummary extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(35),
-          bottomRight: Radius.circular(35)
+          bottomLeft: Radius.circular(25),
+          bottomRight: Radius.circular(25)
         ),
         boxShadow: [
           BoxShadow(
