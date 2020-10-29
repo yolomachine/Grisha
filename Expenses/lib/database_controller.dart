@@ -81,12 +81,14 @@ class ExpensiveDatabaseController extends DatabaseController<ExpenseData> {
   Future<List<ExpenseData>> select(value) async {
     final db = await database;
     final period = value as DateTimeRange;
+    final start = period.start;
+    final end = convertDateTime(period.end).add(Duration(days: 1)).subtract(Duration(seconds: 1));
     final List<Map<String, dynamic>> maps =
       await db.query(
         'expenses',
         where: "date >= ? and date <= ?",
-        whereArgs: [period.start.millisecondsSinceEpoch, period.end.millisecondsSinceEpoch],
-        orderBy: 'date'
+        whereArgs: [start.millisecondsSinceEpoch, end.millisecondsSinceEpoch],
+        orderBy: 'date desc'
       );
 
     return List.generate(maps.length, (i) {

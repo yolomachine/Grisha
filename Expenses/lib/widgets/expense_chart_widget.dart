@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart';
 
 class ExpenseChartWidget extends StatelessWidget {
-  final HashMap<ExpenseCategory, int> expenses;
+  final Map<ExpenseCategory, int> expenses;
   final bool animate;
 
   ExpenseChartWidget(this.expenses, {this.animate});

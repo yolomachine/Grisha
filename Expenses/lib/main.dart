@@ -48,14 +48,14 @@ class Main extends StatefulWidget {
 
 class MainState extends PortraitState<Main> {
   List<Widget> items;
-  HashMap distribution;
+  Map<ExpenseCategory, int> distribution;
   DateTimeRange period;
 
   @override
   void initState() {
     super.initState();
     items = [];
-    distribution = HashMap<ExpenseCategory, int>();
+    distribution = Map<ExpenseCategory, int>();
     period = null;
     _rebuild();
   }
@@ -66,12 +66,17 @@ class MainState extends PortraitState<Main> {
       items.clear();
       distribution.clear();
       for (var e in data) {
-        items.add(ExpenseWidget(e));
+        items.add(ExpenseWidget(e, key: Key("${e.id}")));
         if (!distribution.containsKey(e.expenseCategory)) {
           distribution[e.expenseCategory] = 0;
         }
         distribution[e.expenseCategory] += e.expense.amount;
       }
+      var sortedEntries = distribution.entries.toList()..sort((e1, e2) {
+        var diff = e1.value.compareTo(e2.value);
+        return diff;
+      });
+      distribution = Map<ExpenseCategory, int>.fromEntries(sortedEntries);
     });
   }
 

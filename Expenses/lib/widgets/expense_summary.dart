@@ -8,7 +8,7 @@ import 'expense_chart_widget.dart';
 
 
 class ExpenseSummary extends StatelessWidget {
-  final HashMap<ExpenseCategory, int> distribution;
+  final Map<ExpenseCategory, int> distribution;
   final DateTimeRange period;
 
   const ExpenseSummary({Key key, @required this.distribution, @required this.period}) : super(key: key);

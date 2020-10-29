@@ -14,8 +14,8 @@ DateTime convertDateTime(DateTime date) => DateTime(
 ).toLocal();
 
 DateTimeRange getDefaultTimeRange() => DateTimeRange(
-    start: convertDateTime(DateTime(1917, 11, 7)),
-    end: convertDateTime(DateTime.now())
+    start: DateTime(1917, 11, 7).toLocal(),
+    end: DateTime.now().toLocal()
 );
 
 class DisableOverscrollRendering extends ScrollBehavior {
@@ -198,7 +198,7 @@ class DateTimeTextFieldState extends State<DateTimeTextField> {
   @override
   void initState() {
     super.initState();
-    selectedDate = value ?? convertDateTime(DateTime.now());
+    selectedDate = value ?? DateTime.now().toLocal();
     _date = TextEditingController();
     _date.value = TextEditingValue(text: dateFormatter.format(selectedDate));
   }
