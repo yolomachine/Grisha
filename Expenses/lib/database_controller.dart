@@ -56,6 +56,12 @@ class ExpensiveDatabaseController extends DatabaseController<ExpenseData> {
     );
   }
 
+  Future<int> size() async {
+    final db = await database;
+    final List<Map<String, dynamic>> a = await db.rawQuery('select max(id) from expenses');
+    return a[0]['max(id)'] as int;
+  }
+
   @override
   Future<void> insert(value) async {
     final db = await database;

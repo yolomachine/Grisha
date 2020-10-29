@@ -34,6 +34,7 @@ class ExpenseWidgetState extends State<ExpenseWidget> {
       child: Text("Да", style: TextStyle(color: Colors.redAccent)),
       onPressed: () async {
         await deleteStateCallback(expenseData);
+        Navigator.pop(context);
       },
     );
     AlertDialog alert = AlertDialog(

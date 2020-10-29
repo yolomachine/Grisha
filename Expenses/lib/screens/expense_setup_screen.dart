@@ -14,8 +14,9 @@ class ExpenseSetupScreenResult {
 
 class ExpenseSetupScreen extends StatefulWidget {
   final ExpenseData data;
+  final DateTime date;
 
-  ExpenseSetupScreen({this.data});
+  ExpenseSetupScreen({this.data, this.date});
 
   @override
   _ExpenseSetupScreenState createState() => _ExpenseSetupScreenState();
@@ -30,9 +31,11 @@ class _ExpenseSetupScreenState extends PortraitState<ExpenseSetupScreen> {
   void initState() {
     super.initState();
     isEditing = widget.data != null;
+    final now = DateTime.now().toLocal();
+    var date = widget.data?.expense?.date ?? ((widget.date.month == now.month) ? now : widget.date);
     mutableData = isEditing ?
       widget.data?.clone() :
-      ExpenseData(Expense.only(date: DateTime.now().toLocal()), null);
+      ExpenseData(Expense.only(date: date), null);
     result = ExpenseSetupScreenResult(mutableData, success: true);
   }
 
